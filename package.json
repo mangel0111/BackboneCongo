@@ -1,12 +1,12 @@
 {
   "name": "WebMatrixExpressSite",
   "version": "0.1.0",
-  "author": "The WebMatrix Team <webmatrix@microsoft.com>",
-  "description": "A simple boilerplate for building node applications on Windows Azure (or wherever)",
+  "author": "AngelDevAr",
+  "description": "A simple boilerplate with backbone",
   "contributors": [ 
     {
-      "name": "Justin Beckwith",
-      "email": "justbe@microsoft.com"
+      "name": " Miguel Angel",
+      "email": "m.angel011192@gmail.com"
     } 
   ],  
   "main": "./server.js",  
