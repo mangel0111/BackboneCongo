@@ -1,6 +1,6 @@
 Congo.Database = Backbone.Model.extend({
-    url: function () { 
-        return "/mongo-api/dbs/"+this.id;
+    url: function () {
+        return "/mongo-api/dbs/" + this.id;
     },
     idAttribute: "name"
 });
@@ -63,6 +63,8 @@ Congo.DatabaseOptionView = Backbone.View.extend({
         e.preventDefault();
         var newDb = new Congo.Database({ name: $('#newDb').val() });
         console.log(newDb);
+        newDb.save();
+        Congo.databases.add(newDb);
     },
     render: function () {
         var source = $('#new-db-template').html();
