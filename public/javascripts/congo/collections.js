@@ -10,7 +10,6 @@ Congo.MongoCollections = Backbone.Collection.extend({
     model: Congo.MongoCollection,
     url: function () {
         var url = "/mongo-api/" + Congo.currentDatabase;
-        console.log(url);
         return url;
     }
 });
