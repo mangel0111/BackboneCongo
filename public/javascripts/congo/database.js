@@ -2,7 +2,13 @@ Congo.Database = Backbone.Model.extend({
     url: function () {
         return "/mongo-api/dbs/" + this.id;
     },
-    idAttribute: "name"
+    validate: function (attr) {
+        if (_.isEmpty(attr.name)) {
+            return "To save a database a name is need";
+        }
+    },
+    idAttribute: "name",
+
 });
 
 Congo.DatabaseCollection = Backbone.Collection.extend({
@@ -10,67 +16,55 @@ Congo.DatabaseCollection = Backbone.Collection.extend({
     url: '/mongo-api/dbs'
 });
 
-Congo.DatabaseView = Backbone.View.extend({
+Congo.DatabaseView = Congo.View.extend({
     tagName: "tr",
+    template: "#database-list-template",
     events: {
-        "click a": "sayHello",
-        "click button": "sayHello"
+        "click button": "removeDb"
     },
-    sayHello: function () {
-        alert("This is just a test!");
-    },
-    render: function () {
-        var template = $('#database-list-template').html();
-        var compiled = _.template(template, this.model.attributes);
-        $(this.el).html(compiled);
-        return this;
+    removeDb: function () {
+        var confirmed = confirm("Are you sure?");
+        if (confirmed) {
+            this.model.destroy();
+            Congo.databases.remove(this.model);
+        }
     }
 });
 
-Congo.DatabaseListView = Backbone.View.extend({
-    initialize: function () {
-        this.collection.bind("reset", this.render, this);
-        this.collection.bind("add", this.render, this);
-        this.collection.bind("remove", this.render, this);
-        this.renderOptionView();
-    },
+Congo.DatabaseListView = Congo.ListView.extend({
     tagName: "table",
     className: "table table-striped",
-    renderOptionView: function () {
-        var optionView = new Congo.DatabaseOptionView({ el: "#db-options" });
-    },
-    render: function () {
-        var dbList = [];
-        this.collection.each(function (item) {
-            var itemView = new Congo.DatabaseView({ model: item });
-            dbList.push(itemView.render().el);
-        });
-        $(this.el).html(dbList);
-        // return this;
-        $('#database-list').html(this.el);
-    }
+    ItemView: Congo.DatabaseView
 });
 
 
-Congo.DatabaseOptionView = Backbone.View.extend({
+Congo.DatabaseOptionView = Congo.View.extend({
     initialize: function () {
         this.render();
     },
+    template: "#new-db-template",
     events: {
         "submit form": "addDb"
     },
     addDb: function (e) {
         e.preventDefault();
         var newDb = new Congo.Database({ name: $('#newDb').val() });
-        console.log(newDb);
         newDb.save();
         Congo.databases.add(newDb);
-    },
-    render: function () {
-        var source = $('#new-db-template').html();
-        var compiled = _.template(source);
-        this.$el.html(compiled);
-        return this;
     }
+});
 
+Congo.DatabaseLayoutView = Congo.Layout.extend({
+    template: "#db-details-template",
+    regions: {
+        databaselist: "#database-list",
+        databaseOptions: "#database-options"
+    },
+    layoutReady: function () {
+        var dblistView = new Congo.DatabaseListView({ collection: this.collection });
+        var optionView = new Congo.DatabaseOptionView();
+
+        this.databaselist.append(dblistView.render().el);
+        this.databaseOptions.append(optionView.render().el);
+    }
 });
