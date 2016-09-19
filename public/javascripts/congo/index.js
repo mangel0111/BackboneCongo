@@ -1,22 +1,44 @@
 Congo = {
   init: function () {
+    //router
+    Congo.router = new Congo.Router();
 
     //Data
-    Congo.databases = new Congo.DatabaseCollection({});
+    Congo.databases = new Congo.DatabaseCollection();
+    Congo.currentCollection = new Congo.MongoCollections();
 
     //Views
     Congo.breadcrumbs = new Congo.BreadcrumbView({ el: "#nav" });
+    Congo.collectionLayout = new Congo.CollectionLayoutView({ collection: Congo.currentCollection });
+    Congo.dblayout = new Congo.DatabaseLayoutView({ collection: Congo.databases });
 
-    //Start
-    Congo.start();
-  },
-  showDatabases: function () {
-    var dblayout = new Congo.DatabaseLayoutView({ collection: Congo.databases });
-    dblayout.render();
-    $('#details').append(dblayout.el);
-    Congo.databases.fetch();
+    //App Layout
+    Congo.appLayout = new Congo.AppLayout({
+      el: "#app",
+      detailRegion: "#details"
+    });
   },
   start: function () {
-    Congo.showDatabases();
+    //Initialize the app
+    Congo.init();
+
+    //for routing purposes
+    Backbone.history.start();
   }
 }
+
+Congo.Router = Backbone.Router.extend({
+  routes: {
+    "": "index",
+    ":db": "showDatabase"
+  },
+  showDatabase: function (db) {
+    Congo.currentDatabase = db;
+    Congo.appLayout.renderDetails(Congo.collectionLayout);
+    Congo.currentCollection.fetch();
+  },
+  index: function () {
+    Congo.appLayout.renderDetails(Congo.dblayout);
+    Congo.databases.fetch();
+  }
+});

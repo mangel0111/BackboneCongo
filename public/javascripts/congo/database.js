@@ -16,19 +16,19 @@ Congo.DatabaseCollection = Backbone.Collection.extend({
     url: '/mongo-api/dbs'
 });
 
-Congo.DatabaseView = Congo.View.extend({
+Congo.DatabaseView = Congo.ItemView.extend({
     tagName: "tr",
     template: "#database-list-template",
     events: {
-        "click button": "removeDb"
+        "click button": "remove",
+        "click a": "showDb"
     },
-    removeDb: function () {
-        var confirmed = confirm("Are you sure?");
-        if (confirmed) {
-            this.model.destroy();
-            Congo.databases.remove(this.model);
-        }
+    showDb: function (e) {
+        e.preventDefault();
+        var db = $(e.currentTarget).text();
+        Congo.router.navigate(db, true);
     }
+
 });
 
 Congo.DatabaseListView = Congo.ListView.extend({

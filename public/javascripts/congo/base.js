@@ -3,10 +3,17 @@ Congo.View = Backbone.View.extend({
         var source = $(this.template).html();
         var modelView = {};
         if (this.model)
-            model = this.model.toJSON();
+            modelView = this.model.toJSON();
         var compiled = _.template(source, modelView);
         $(this.el).html(compiled);
         return this;
+    }
+});
+
+Congo.ItemView = Congo.View.extend({
+    remove: function () {
+        var confirmed = confirm("are you sure?");
+        if (confirmed) this.model.destroy();
     }
 });
 
@@ -36,7 +43,7 @@ Congo.ListView = Backbone.View.extend({
 Congo.Layout = Backbone.View.extend({
     render: function () {
         //Render template
-        var templateSource = $('#db-details-template').html();
+        var templateSource = $(this.template).html();
         this.$el.append(_.template(templateSource));
 
         var self = this;
@@ -51,5 +58,17 @@ Congo.Layout = Backbone.View.extend({
         if (self.layoutReady) self.layoutReady();
 
         return self;
+    }
+});
+
+Congo.AppLayout = Backbone.View.extend({
+    renderNavigator: function () {
+
+    },
+    renderDetails: function (detailView) {
+        //Congo.collectionLayout.render();
+        this.$(this.options.detailRegion).empty();
+        detailView.render();
+        this.$(this.options.detailRegion).append(detailView.el);
     }
 });
